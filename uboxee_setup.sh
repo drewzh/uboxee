@@ -14,7 +14,12 @@ fi
 echo "Please note, this script is for 64bit users ONLY, press ENTER to continue or CTRL+C to cancel..."
 read
 
-#VARIABLES
+#############
+## OPTIONS ##
+#############
+# Set default menu type
+var_menutype="basic"
+# Set CPU architecture type
 architecture=`uname -m`
 
 wizard(){
