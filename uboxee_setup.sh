@@ -96,6 +96,10 @@ function wizard(){
     apt-get clean
     apt-get -y autoremove
 
+    info "+----------------------------------------+"
+    info "| Configuration complete, please reboot! |"
+    info "+----------------------------------------+"
+    
     #info "+-------------------------------------------------+"
     #info "|               !!!IMPORTANT !!!                  |"
     #info "|               ----------------                  |"
