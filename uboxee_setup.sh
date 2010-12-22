@@ -49,7 +49,7 @@ function wizard(){
 
     info "Adding repository information..."
     add_repo "ppa:nvidia-vdpau/ppa"
-    add_repo "'deb http://apt.boxee.tv/ $var_codename main'"
+    add_repo "ppa:team-xbmc/ppa"
     add_repo "ppa:pmcenery/ppa"
     add_repo "ppa:sevenmachines/flash"
     info "Updating repositories and upgrading..."
@@ -81,7 +81,8 @@ function wizard(){
     amixer sset 'IEC958,0' unmute
     amixer sset 'IEC958,1' unmute 
     
-    install "boxee"
+    #install "boxee"
+    install xbmc
 
     install "gvfs ipheth-utils"
     
@@ -95,16 +96,16 @@ function wizard(){
     apt-get clean
     apt-get -y autoremove
 
-    info "+-------------------------------------------------+"
-    info "|               !!!IMPORTANT !!!                  |"
-    info "|               ----------------                  |"
-    info "| Please reboot, load Boxee and go to...          |"
-    info "| - Settings > Media > Advanced                   |"
-    info "|   Uncheck hardware assisted decoding and select |"
-    info "|   VDPAU in the render method selection.         |"
-    info "| - Restart Boxee                                 |"
-    info "|                  ALL DONE!                      |"
-    info "+-------------------------------------------------+"
+    #info "+-------------------------------------------------+"
+    #info "|               !!!IMPORTANT !!!                  |"
+    #info "|               ----------------                  |"
+    #info "| Please reboot, load Boxee and go to...          |"
+    #info "| - Settings > Media > Advanced                   |"
+    #info "|   Uncheck hardware assisted decoding and select |"
+    #info "|   VDPAU in the render method selection.         |"
+    #info "| - Restart Boxee                                 |"
+    #info "|                  ALL DONE!                      |"
+    #info "+-------------------------------------------------+"
 }
 
 printBanner(){
