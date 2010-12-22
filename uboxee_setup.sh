@@ -11,9 +11,6 @@ then
   exit
 fi
 
-echo "Please note, this script is for 64bit users ONLY, press ENTER to continue or CTRL+C to cancel..."
-read
-
 #############
 ## OPTIONS ##
 #############
@@ -21,117 +18,87 @@ read
 var_menutype="basic"
 # Set CPU architecture type
 architecture=`uname -m`
+# Get ubuntu codename
+var_codename=`lsb_release -c | awk '{print $2}'`
+# Log file
+var_log=/var/log/uboxee.log
 
-wizard(){
-    echo "Customising Ubuntu please wait..."
+function info(){
+    echo $@ | tee -a ${var_log}
+}
 
-    echo "Adding repository information..."
-    add-apt-repository ppa:tualatrix/ppa
-    wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list
-    apt-get --quiet update
-    apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring
-    apt-get --quiet update
-    apt-get --yes install app-install-data-medibuntu apport-hooks-medibuntu
-    add-apt-repository ppa:tualatrix/ppa
-    add-apt-repository ppa:nvidia-vdpau/ppa
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CEC06767
-    add-apt-repository ppa:team-xbmc-svn/ppa
-    add-apt-repository ppa:jcfp/ppa
-    add-apt-repository ppa:tualatrix/ppa
-    add-apt-repository ppa:pmcenery/ppa
-    add-apt-repository ppa:ubuntu-wine/ppa
-    add-apt-repository ppa:deja-dup-team/ppa
-    add-apt-repository ppa:elementaryart
-    add-apt-repository ppa:am-monkeyd/nautilus-elementary-ppa
-    add-apt-repository ppa:gloobus-dev/gloobus-preview
-    add-apt-repository ppa:awn-testing/ppa
-    apt-get update
+function install(){
+    info "Installing $@..."
+    apt-get install -qq --force-yes $@ >> $var_log 2>&1 &
+}
+
+function add_repo(){
+    apt-add-repository $1 >> $var_log 2>&1 &
+}
+
+function enableAutoUpdate() {
+    sed -i '4s|//|  |g' /etc/apt/apt.conf.d/50unattended-upgrades
+    sed -i 's|//Unattended-Upgrade::Mail|Unattended-Upgrade::Mail|g' /etc/apt/apt.conf.d/50unattended-upgrades
+    sed -i 's|APT::Periodic::Download-Upgradeable-Packages "0";|APT::Periodic::Download-Upgradeable-Packages "1";|g' /etc/apt/apt.conf.d/10periodic
+    sed -i 's|APT::Periodic::AutocleanInterval "0";|APT::Periodic::AutocleanInterval "1";|g' /etc/apt/apt.conf.d/10periodic
+    echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
+}
+
+function wizard(){
+    info "Customising Ubuntu please wait..."
+
+    info "Adding repository information..."
+    add_repo "ppa:nvidia-vdpau/ppa"
+    add_repo "deb http://apt.boxee.tv/ $var_codename main"
+    add_repo "ppa:pmcenery/ppa"
+    info "Updating repositories and upgrading..."
+    apt-get update -qq
     apt-get dist-upgrade
 
-    echo "Setting up unattented updates..."
-    apt-get install unattended-upgrades
-    dpkg-reconfigure unattended-upgrades
+    # Disable console blanking
+    setterm -blank 0
+
+    info "Setting up unattented updates..."
+    install "unattended-upgrades"
+    enableAutoUpdate
     
-    echo "Installing SSH..."
-    apt-get install openssh-server
+    info "Installing SSH..."
+    install "openssh-server"
 
-    echo "Installing Restricted Extras (installs java, flash and  a few other essential commercial products)"
-    apt-get install ubuntu-restricted-extras
+    info "Installing restricted extras..."
+    install "ubuntu-restricted-extras"
 
-    echo "Installing Ubuntu Tweak..."
-    apt-get install ubuntu-tweak
-
-    echo "Installing Medibuntu..."
-    apt-get install libdvdcss2
-    if [ "$architecture" != "x86_64" ] && [ "$architecture" != "ia64" ]; then
-        apt-get install w32codecs
-    else
-        apt-get install w64codecs
-    fi    
-
-    echo "Installing Nvidia related drivers and extras..."
-    apt-get install vdpauinfo libvdpau1 nvidia-current nvidia-190-modaliases nvidia-glx-190 nvidia-settings-190 hd-widescreen-wallpapers
-
-    echo "Installing Boxee..."
-    if [ "$architecture" != "x86_64" ] && [ "$architecture" != "ia64" ]; then
-        wget http://dl.boxee.tv/boxee-0.9.22.13692.i486.modfied.deb --output-document=/tmp/boxee.deb
-    else
-        wget http://dl.boxee.tv/boxee-0.9.22.13692.x86_64.modfied.deb --output-document=/tmp/boxee.deb
-    fi
-        
-    dpkg -i /tmp/boxee.deb
-    rm -f /tmp/boxee.deb
-
-    echo "Installing XBMC Media Center..."
-    apt-get install xbmc
-
-    echo "Installing sabnzbdplus..."
-    apt-get install sabnzbdplus
-
-    echo "Installing Ubuntu Tweak..."
-    apt-get install ubuntu-tweak
-
-    echo "Installing IPhone driver..."
-    apt-get install gvfs ipheth-utils
-
-    echo "Installing Official Java Package..."
-    apt-get install sun-java6-jdk
-
-    echo "Installing Wine..."
-    apt-get install wine
-
-    echo "Installing Deja-Dup Backup..."
-    apt-get install deja-dup
-
-    echo "Installing Elementary Theme..."
-    apt-get install elementaryart
-    nautilus -q
-
-    echo "Installing Gloobus..."
-    apt-get install gloobus-preview
-
-    echo "Installing AWN..."
-    apt-get install awn
-
-    echo "Installing Google Chrome..."
-    apt-get remove firefox
+    info "Installing Nvidia related drivers and extras..."
+    install "libvdpau1 nvidia-185-libvdpau"
+    nvidia-xconfig
+    # Disable compiz
+    su $USER -c 'metacity --replace &'
     
-    echo "Installing Boxee..."
-    if [ "$architecture" != "x86_64" ] && [ "$architecture" != "ia64" ]; then
-        wget http://dl.google.com/linux/direct/google-chrome-unstable_current_i386.deb --output-document=/tmp/chrome.deb
-    else
-        wget http://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb --output-document=/tmp/chrome.deb
-    fi
-    
-    dpkg -i /tmp/chrome.deb
-    rm -f /tmp/chrome.deb
+    info "Disabling screensaver timeout..."
+    gconftool-2 -s /apps/gnome-screensaver/idle_activation_enabled --type=bool false
 
-    #echo "Installing boxee splash screen..."
+    info "Disabling monitor sleep timeout..."
+    gconftool-2 -s /apps/gnome-power-manager/ac_sleep_display --type=int 0
+
+    info "Installing Boxee..."
+    install "boxee"
+
+    info "Installing IPhone driver..."
+    install "gvfs ipheth-utils"
+    
+    # Add user to fuse group
+    usermod -a -G fuse $USER
+
+    #info "Installing boxee splash screen..."
     #update-alternatives --install /usr/lib/usplash/usplash-artwork.so usplash-artwork.so /usr/lib/usplash/usplash-theme-boxee.so 55
     
-    echo "+-------------------------------------------------+"
-    echo "| All customisations applied, have a nice day! :) |"
-    echo "+-------------------------------------------------+"
+    # Clean up
+    apt-get clean
+    apt-get -y autoremove
+
+    info "+-------------------------------------------------+"
+    info "| All customisations applied, have a nice day! :) |"
+    info "+-------------------------------------------------+"
 }
 
 printBanner(){
@@ -145,67 +112,25 @@ printMsg(){
     echo -e "\033[1m$1\033[0m"
 }
 
-printError(){
-    echo -e "\033[1;31m$1\033[0m"
-}
-
-printSuccess(){
-    echo -e "\033[1;32m$1\033[0m"
-}
-
-basicMenu(){
-    printMsg "+-----------------------------------------+"
-    printMsg "| Please select an option and hit <enter> |"
-    printMsg "+-----------------------------------------+"
-    printMsg "| 1) Start wizard                         |"
-    printMsg "| 2) Switch to advanced mode              |"
-    printMsg "| 3) Quit                                 |"
-    printMsg "+-----------------------------------------+"
-}
-
-advancedMenu(){
-    printMsg "+-----------------------------------------+"
-    printMsg "| Please select an option and hit <enter> |"
-    printMsg "+-----------------------------------------+"
-    printMsg "| 1) Install boxee                        |"
-    printMsg "| 2) Switch to basic mode                 |"
-    printMsg "| 3) Quit                                 |"
-    printMsg "+-----------------------------------------+"
+menu(){
+    printMsg "+------------------------------------+"
+    printMsg "|  Select an option and hit <enter>  |"
+    printMsg "+------------------------------------+"
+    printMsg "| 1) Start wizard                    |"
+    printMsg "| 2) Quit                            |"
+    printMsg "+------------------------------------+"
 }
 
 while [ 1 ]; do
     printBanner
-    case $var_menutype in
-    "basic")
-        basicMenu
-        read CHOICE
-        case "$CHOICE" in
-        "1")
-            wizard
-            ;;
-        "2")
-            var_menutype="advanced"
-            continue
-            ;;
-        "3")
-            exit
-            ;;
-        esac
-    ;;
-    "advanced")
-        advancedMenu
-        read CHOICE
-        case "$CHOICE" in
-        "1")
-            # Do nothing yet
-            ;;
-        "2")
-            var_menutype="basic"
-            continue
-            ;;
-        "3")
-            exit
-            ;;
-        esac
+    menu
+    read CHOICE
+    case "$CHOICE" in
+    "1")
+        wizard
+        ;;
+    "2")
+        exit
+        ;;
     esac
 done
