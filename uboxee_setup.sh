@@ -96,7 +96,14 @@ function wizard(){
     apt-get -y autoremove
 
     info "+-------------------------------------------------+"
-    info "| All customisations applied, have a nice day! :) |"
+    info "|               !!!IMPORTANT !!!                  |"
+    info "|               ----------------                  |"
+    info "| Please reboot, load Boxee and go to...          |"
+    info "| - Settings > Media > Advanced                   |"
+    info "|   Uncheck hardware assisted decoding and select |"
+    info "|   VDPAU in the render method selection.         |"
+    info "| - Restart Boxee                                 |"
+    info "|                  ALL DONE!                      |"
     info "+-------------------------------------------------+"
 }
 
