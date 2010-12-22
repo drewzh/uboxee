@@ -29,11 +29,11 @@ function info(){
 
 function install(){
     info "Installing $@..."
-    apt-get install -qq --force-yes $@ >> $var_log 2>&1 &
+    apt-get install -qq --force-yes $@ >> $var_log 2>&1
 }
 
 function add_repo(){
-    apt-add-repository $1 >> $var_log 2>&1 &
+    apt-add-repository $1 >> $var_log 2>&1
 }
 
 function enableAutoUpdate() {
