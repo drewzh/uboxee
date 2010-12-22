@@ -76,6 +76,11 @@ function wizard(){
     info "Disabling monitor sleep timeout..."
     gconftool-2 -s /apps/gnome-power-manager/ac_sleep_display --type=int 0
 
+    info "Unmuting HDMI spdif channels..."
+    amixer sset 'IEC958 Default PCM' unmute
+    amixer sset 'IEC958,0' unmute
+    amixer sset 'IEC958,1' unmute 
+    
     install "boxee"
 
     install "gvfs ipheth-utils"
