@@ -51,6 +51,7 @@ function wizard(){
     add_repo "ppa:nvidia-vdpau/ppa"
     add_repo "deb http://apt.boxee.tv/ $var_codename main"
     add_repo "ppa:pmcenery/ppa"
+    add_repo "ppa:sevenmachines/flash"
     info "Updating repositories and upgrading..."
     apt-get update -qq
     apt-get dist-upgrade
@@ -58,15 +59,10 @@ function wizard(){
     # Disable console blanking
     setterm -blank 0
 
-    info "Setting up unattented updates..."
     install "unattended-upgrades"
     enableAutoUpdate
-    
-    info "Installing SSH..."
     install "openssh-server"
-
-    info "Installing restricted extras..."
-    install "ubuntu-restricted-extras"
+    install "flashplugin64-installer"
 
     info "Installing Nvidia related drivers and extras..."
     install "libvdpau1 nvidia-185-libvdpau"
@@ -80,10 +76,8 @@ function wizard(){
     info "Disabling monitor sleep timeout..."
     gconftool-2 -s /apps/gnome-power-manager/ac_sleep_display --type=int 0
 
-    info "Installing Boxee..."
     install "boxee"
 
-    info "Installing IPhone driver..."
     install "gvfs ipheth-utils"
     
     # Add user to fuse group
