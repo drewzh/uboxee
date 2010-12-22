@@ -49,7 +49,7 @@ function wizard(){
 
     info "Adding repository information..."
     add_repo "ppa:nvidia-vdpau/ppa"
-    add_repo "deb http://apt.boxee.tv/ $var_codename main"
+    add_repo "'deb http://apt.boxee.tv/ $var_codename main'"
     add_repo "ppa:pmcenery/ppa"
     add_repo "ppa:sevenmachines/flash"
     info "Updating repositories and upgrading..."
