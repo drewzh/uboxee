@@ -48,7 +48,7 @@ function wizard(){
     info "Customising Ubuntu please wait..."
 
     info "Adding repository information..."
-    add_repo "ppa:nvidia-vdpau/ppa"
+    #add_repo "ppa:nvidia-vdpau/ppa"
     add_repo "ppa:team-xbmc/ppa"
     add_repo "ppa:pmcenery/ppa"
     add_repo "ppa:sevenmachines/flash"
@@ -64,8 +64,8 @@ function wizard(){
     install "openssh-server"
     install "flashplugin64-installer"
 
-    info "Installing Nvidia related drivers and extras..."
-    install "libvdpau1 nvidia-185-libvdpau"
+    info "Installing Nvidia drivers..."
+    install "nvidia-current"
     nvidia-xconfig
     # Disable compiz
     su $USER -c 'metacity --replace &'
@@ -82,7 +82,7 @@ function wizard(){
     amixer sset 'IEC958,1' unmute 
     
     #install "boxee"
-    install xbmc
+    install "xbmc"
 
     install "gvfs ipheth-utils"
     
