@@ -62,7 +62,12 @@ function wizard(){
     install "unattended-upgrades"
     enableAutoUpdate
     install "openssh-server"
-    install "flashplugin64-installer"
+    install "flashplugin-installer"
+
+    info "Installing release candidate flash plugin for hardware acceleration..."
+    wget http://download.macromedia.com/pub/labs/flashplayer10/flashplayer10_2_r2_32bit_linux_012611.tar.gz
+    tar zxvf flashplayer10_2_r2_32bit_linux_012611.tar.gz
+    sudo cp libflashplayer.so /usr/lib/flashplugin-installer/
 
     info "Installing Nvidia drivers..."
     install "nvidia-current"
@@ -81,8 +86,7 @@ function wizard(){
     amixer sset 'IEC958,0' unmute
     amixer sset 'IEC958,1' unmute 
     
-    #install "boxee"
-    install "xbmc"
+    install "boxee"
 
     install "gvfs ipheth-utils"
     
@@ -100,16 +104,16 @@ function wizard(){
     info "| Configuration complete, please reboot! |"
     info "+----------------------------------------+"
     
-    #info "+-------------------------------------------------+"
-    #info "|               !!!IMPORTANT !!!                  |"
-    #info "|               ----------------                  |"
-    #info "| Please reboot, load Boxee and go to...          |"
-    #info "| - Settings > Media > Advanced                   |"
-    #info "|   Uncheck hardware assisted decoding and select |"
-    #info "|   VDPAU in the render method selection.         |"
-    #info "| - Restart Boxee                                 |"
-    #info "|                  ALL DONE!                      |"
-    #info "+-------------------------------------------------+"
+    info "+-------------------------------------------------+"
+    info "|               !!!IMPORTANT !!!                  |"
+    info "|               ----------------                  |"
+    info "| Please reboot, load Boxee and go to...          |"
+    info "| - Settings > Media > Advanced                   |"
+    info "|   Uncheck hardware assisted decoding and select |"
+    info "|   VDPAU in the render method selection.         |"
+    info "| - Restart Boxee                                 |"
+    info "|                  ALL DONE!                      |"
+    info "+-------------------------------------------------+"
 }
 
 printBanner(){
